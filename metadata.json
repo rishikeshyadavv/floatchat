@@ -1,0 +1,8 @@
+{
+  "name": "FloatChat — Ocean Data Explorer",
+  "description": "Conversational oceanographic query engine for ARGO float ocean data",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
