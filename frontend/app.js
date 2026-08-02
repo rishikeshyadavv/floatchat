@@ -17,6 +17,152 @@ if ("geolocation" in navigator) {
   );
 }
 
+// ── Ocean Question Categories Dataset ──
+const OCEAN_CATEGORIES = [
+  {
+    id: "temp",
+    icon: "🌡️",
+    title: "Temperature & Heat Content",
+    description: "Thermal vertical profiles, ocean warming trends, thermocline depth layers, and seasonal heat content changes.",
+    questions: [
+      "Show me the temperature profile of float 2902264",
+      "What is the average sea surface temperature in the Arabian Sea?",
+      "Show vertical temperature profiles across the Indian Ocean"
+    ]
+  },
+  {
+    id: "salinity",
+    icon: "🧂",
+    title: "Salinity & Water Masses",
+    description: "Halocline gradients, freshwater influx, high-salinity Arabian Sea water vs fresh Bay of Bengal profiles.",
+    questions: [
+      "Compare salinity in the Arabian Sea vs Bay of Bengal",
+      "Show salinity at 0m, 200m, and 1000m depth",
+      "Identify high-salinity water masses near lat 15, lon 68"
+    ]
+  },
+  {
+    id: "spatial",
+    icon: "📍",
+    title: "Spatial Float Tracking",
+    description: "Drift trajectories, float locations, geospatial proximity searches, and spatial coordinate plotting.",
+    questions: [
+      "Find nearest ARGO floats to lat 12, lon 65",
+      "List all active floats in the Equatorial Indian Ocean",
+      "Show coordinates and positions for float 2902264"
+    ]
+  },
+  {
+    id: "bgc",
+    icon: "🧪",
+    title: "Biogeochemical Array",
+    description: "Dissolved oxygen minimum zones (OMZ cores), Chlorophyll-a DCM peaks, nitrate, pH, and bio-optical metrics.",
+    questions: [
+      "Show oxygen minimum zone (OMZ) profiles near lat 14, lon 67",
+      "Plot Chlorophyll-a concentration vs depth",
+      "List biogeochemical profiles with dissolved oxygen data"
+    ]
+  },
+  {
+    id: "extremes",
+    icon: "⚡",
+    title: "Anomaly Detection & Extremes",
+    description: "Marine heatwaves, extreme temperature spikes, rapid salinity drops, and deep-sea cold anomalies.",
+    questions: [
+      "Detect marine heatwaves or thermal anomalies above 29°C",
+      "Show unusual salinity drops below 33 PSU",
+      "Find extreme oxygen depletion zones under 15 µmol/kg"
+    ]
+  },
+  {
+    id: "depth",
+    icon: "🌊",
+    title: "Depth Stratification",
+    description: "Multi-depth layer comparisons across surface (0-100m), mesopelagic (100-1000m), and bathypelagic (1000m+) zones.",
+    questions: [
+      "Show temperature at 0m, 500m, and 2000m depth",
+      "Calculate thermocline depth layer in the Bay of Bengal",
+      "Compare surface vs deep water measurements"
+    ]
+  },
+  {
+    id: "qc",
+    icon: "🛡️",
+    title: "Quality Control & Provenance",
+    description: "Data integrity verification, Ifremer GDAC QC flag 1 auditing, and tamper-evident SHA-256 data lineage.",
+    questions: [
+      "Filter measurements verified with QC Flag 1 (Good)",
+      "Audit dataset provenance and SHA-256 integrity logs",
+      "Show distribution of quality control flags across fleet"
+    ]
+  },
+  {
+    id: "seasonal",
+    icon: "📅",
+    title: "Seasonal Trends & Cycles",
+    description: "Monsoon vs post-monsoon thermal shifts, winter cooling, and interannual ocean variations.",
+    questions: [
+      "Compare winter vs summer ocean temperature profiles",
+      "Show monthly sea surface temperature trends",
+      "Seasonal variation of salinity in the Arabian Sea"
+    ]
+  },
+  {
+    id: "regional",
+    icon: "🗺️",
+    title: "Regional Basin Comparison",
+    description: "Comparative hydrographic metrics between Arabian Sea, Bay of Bengal, and Equatorial Indian Ocean.",
+    questions: [
+      "Contrast Arabian Sea vs Equatorial Indian Ocean temperature",
+      "Regional basin comparison of dissolved oxygen",
+      "Show mean surface salinity by ocean basin"
+    ]
+  },
+  {
+    id: "fleet",
+    icon: "📊",
+    title: "Fleet Analytics & Statistics",
+    description: "ARGO float fleet counts, active sensor payloads (Core vs BGC vs Deep), and profile record totals.",
+    questions: [
+      "Show total active float count and record counts",
+      "Break down fleet by float model type (Core, BGC, Deep)",
+      "List all WMO float IDs and sensor capabilities"
+    ]
+  }
+];
+
+function openCategoriesModal() {
+  const modal = document.getElementById("categoriesModal");
+  const grid = document.getElementById("categoriesGrid");
+  if (!modal || !grid) return;
+
+  grid.innerHTML = OCEAN_CATEGORIES.map((cat, idx) => `
+    <div class="category-card">
+      <div class="category-card-header">
+        <span class="category-icon">${cat.icon}</span>
+        <span class="category-num">CAT ${idx + 1}</span>
+      </div>
+      <div class="category-card-title">${escapeHtml(cat.title)}</div>
+      <div class="category-card-desc">${escapeHtml(cat.description)}</div>
+      <div class="category-prompts">
+        ${cat.questions.map(q => `
+          <button class="category-prompt-btn" onclick="askFromCategoryModal('${escapeHtml(q).replace(/'/g, "\\'")}')">
+            ${escapeHtml(q)} →
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  modal.style.display = "flex";
+}
+
+function askFromCategoryModal(qText) {
+  const modal = document.getElementById("categoriesModal");
+  if (modal) modal.style.display = "none";
+  askQuestion(qText);
+}
+
 // ── Info Modal ──
 document.getElementById("infoBtn")?.addEventListener("click", () => {
   document.getElementById("infoModal").style.display = "flex";
@@ -30,6 +176,20 @@ document.getElementById("infoModal")?.addEventListener("click", (e) => {
   }
 });
 
+// Categories Modal Click Event Listeners
+document.getElementById("categoriesNavBtn")?.addEventListener("click", openCategoriesModal);
+document.getElementById("heroCategoriesBtn")?.addEventListener("click", openCategoriesModal);
+document.getElementById("categoriesModalClose")?.addEventListener("click", () => {
+  const modal = document.getElementById("categoriesModal");
+  if (modal) modal.style.display = "none";
+});
+document.getElementById("categoriesModal")?.addEventListener("click", (e) => {
+  const modal = document.getElementById("categoriesModal");
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
 // Modal Close Handlers (ESC key & clicks)
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -37,6 +197,8 @@ document.addEventListener("keydown", (e) => {
     if (infoM) infoM.style.display = "none";
     const anaM = document.getElementById("analyticsModal");
     if (anaM) anaM.style.display = "none";
+    const catM = document.getElementById("categoriesModal");
+    if (catM) catM.style.display = "none";
   }
 });
 
@@ -441,7 +603,7 @@ async function loadAnalyticsDashboard() {
   }
 }
 
-// ── AI Mode Selection ──
+// ── AI Mode & Model Selector Dropdown ──
 const modeHints = {
   standard: "Standard SQL Engine (gemini-3.6-flash) · Translates English to DuckDB SQL",
   fast: "Low Latency Engine (gemini-3.1-flash-lite) · High-speed, fast query response",
@@ -449,16 +611,75 @@ const modeHints = {
   search: "Google Search Grounding (gemini-3.6-flash) · Live marine science facts & web sources"
 };
 
+const modelTitles = {
+  standard: "3.6 Flash",
+  fast: "3.5 Flash-Lite",
+  thinking: "Extended thinking",
+  search: "Search Grounding"
+};
+
+function setMode(modeKey) {
+  if (!modeHints[modeKey]) modeKey = "standard";
+  selectedMode = modeKey;
+
+  // Update top mode bar active pill
+  document.querySelectorAll(".mode-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === modeKey);
+  });
+
+  // Update model selector button text
+  const btnText = document.getElementById("modelSelectText");
+  if (btnText) btnText.textContent = modelTitles[modeKey] || "3.6 Flash";
+
+  // Update dropdown checkmark states
+  document.querySelectorAll(".model-option").forEach(opt => {
+    const isAct = opt.dataset.mode === modeKey;
+    opt.classList.toggle("active", isAct);
+    const checkEl = opt.querySelector(".model-option-check");
+    if (checkEl) checkEl.textContent = isAct ? "✓" : "";
+  });
+
+  // Update hint
+  const hintEl = document.getElementById("modeHint");
+  if (hintEl && modeHints[modeKey]) hintEl.textContent = modeHints[modeKey];
+}
+
+// Mode pills top bar click listener
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    selectedMode = btn.dataset.mode;
-    const hintEl = document.getElementById("modeHint");
-    if (hintEl && modeHints[selectedMode]) {
-      hintEl.textContent = modeHints[selectedMode];
-    }
+    setMode(btn.dataset.mode);
   });
+});
+
+// Floating Model Dropdown Toggle & Options
+const modelSelectBtn = document.getElementById("modelSelectBtn");
+const modelDropdownMenu = document.getElementById("modelDropdownMenu");
+
+modelSelectBtn?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  const isOpen = modelDropdownMenu && modelDropdownMenu.style.display !== "none";
+  if (modelDropdownMenu) modelDropdownMenu.style.display = isOpen ? "none" : "block";
+  if (modelSelectBtn) modelSelectBtn.setAttribute("aria-expanded", String(!isOpen));
+});
+
+document.querySelectorAll(".model-option").forEach(opt => {
+  opt.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const mode = opt.dataset.mode;
+    if (mode) setMode(mode);
+    if (modelDropdownMenu) modelDropdownMenu.style.display = "none";
+    if (modelSelectBtn) modelSelectBtn.setAttribute("aria-expanded", "false");
+  });
+});
+
+// Close dropdown on outside click or ESC
+document.addEventListener("click", (e) => {
+  if (modelDropdownMenu && modelDropdownMenu.style.display !== "none") {
+    if (!modelSelectBtn.contains(e.target) && !modelDropdownMenu.contains(e.target)) {
+      modelDropdownMenu.style.display = "none";
+      if (modelSelectBtn) modelSelectBtn.setAttribute("aria-expanded", "false");
+    }
+  }
 });
 
 // ── Theme & Colors ──
@@ -593,7 +814,8 @@ function loadChatHistory() {
     standard: "Standard",
     fast: "Low Latency",
     thinking: "High Thinking",
-    search: "Search Grounded"
+    search: "Search Grounded",
+    stitch: "✨ Stitch UI"
   };
 
   history.forEach(item => {
@@ -740,12 +962,17 @@ function askQuestion(qText, mode) {
 
 function renderResult(targetId, res, httpStatus) {
   const target = document.getElementById(targetId);
+  if (!target) return;
   if (!res.success) {
     const blocked = httpStatus === 429 || /rate limit/i.test(res.error || "");
     target.innerHTML = `
-      <span class="status-tag ${blocked ? "blocked" : "err"}">${blocked ? "Rate limited" : "Query failed"}</span>
-      <div class="card" style="color:${blocked ? "var(--amber)" : "var(--coral)"}; font-size:13.5px;">${escapeHtml(res.error || "Unknown error")}</div>
-      ${res.sql ? sqlToggleHtml(res.sql) : ""}
+      <div class="unified-answer-container">
+        <div class="unified-header-bar">
+          <span class="status-tag ${blocked ? "blocked" : "err"}">${blocked ? "Rate limited" : "Query failed"}</span>
+        </div>
+        <div class="card" style="color:${blocked ? "var(--amber)" : "var(--coral)"}; font-size:13.5px;">${escapeHtml(res.error || "Unknown error")}</div>
+        ${res.sql ? sqlToggleHtml(res.sql) : ""}
+      </div>
     `;
     wireSqlToggle(target);
     return;
@@ -753,23 +980,16 @@ function renderResult(targetId, res, httpStatus) {
 
   // Handle Category Menu
   if (res.isCategoryMenu && res.categories) {
+    openCategoriesModal();
     target.innerHTML = `
-      <span class="status-tag ok">Categories Explorer</span>
-      <div class="card category-menu-container">
-        <div class="category-header-title">FloatChat Oceanography Question Explorer</div>
-        <div class="category-header-sub">Here are 10 curated question categories for FloatChat powered by Gemini models and 10+ Ifremer GDAC ARGO float datasets. Select any category to view its specific questions:</div>
-        <div class="category-grid">
-          ${res.categories.map(cat => `
-            <div class="category-card">
-              <div>
-                <div class="category-card-top">
-                  <span class="category-title-text">${escapeHtml(cat.title)}</span>
-                </div>
-                <div class="category-desc-text">${escapeHtml(cat.description)}</div>
-              </div>
-              <button class="category-btn" onclick="selectCategory('${escapeHtml(cat.id)}')">Explore ${cat.questions.length} Questions →</button>
-            </div>
-          `).join('')}
+      <div class="unified-answer-container">
+        <div class="unified-header-bar">
+          <span class="status-tag ok">Categories Explorer</span>
+          <span class="unified-badge">10 Ocean Domains</span>
+        </div>
+        <div class="card category-menu-container">
+          <div class="category-header-title">FloatChat Oceanography Question Categories</div>
+          <div class="category-header-sub">The 10-Category Explorer modal has opened. Select any category card to launch your query!</div>
         </div>
       </div>
     `;
@@ -781,17 +1001,22 @@ function renderResult(targetId, res, httpStatus) {
   if (res.isQuestionList && res.category) {
     const cat = res.category;
     target.innerHTML = `
-      <span class="status-tag ok">${escapeHtml(cat.title)}</span>
-      <div class="card question-list-container">
-        <div class="category-header-title">${escapeHtml(cat.title)}</div>
-        <div class="category-header-sub">${escapeHtml(cat.description)} — Click any question below to run it automatically:</div>
-        <div class="questions-group">
-          ${cat.questions.map(q => `
-            <button class="question-item-btn" onclick="askQuestion('${escapeHtml(q).replace(/'/g, "\\'")}', '${cat.suggestedMode || 'standard'}')">
-              <span>${escapeHtml(q)}</span>
-              <span class="question-arrow">Run Query →</span>
-            </button>
-          `).join('')}
+      <div class="unified-answer-container">
+        <div class="unified-header-bar">
+          <span class="status-tag ok">${escapeHtml(cat.title)}</span>
+          <span class="unified-badge">${cat.questions ? cat.questions.length : 0} Questions</span>
+        </div>
+        <div class="card question-list-container">
+          <div class="category-header-title">${escapeHtml(cat.title)}</div>
+          <div class="category-header-sub">${escapeHtml(cat.description)} — Click any question below to run it automatically:</div>
+          <div class="questions-group">
+            ${(cat.questions || []).map(q => `
+              <button class="question-item-btn" onclick="askQuestion('${escapeHtml(q).replace(/'/g, "\\'")}', '${cat.suggestedMode || 'standard'}')">
+                <span>${escapeHtml(q)}</span>
+                <span class="question-arrow">Run Query →</span>
+              </button>
+            `).join('')}
+          </div>
         </div>
       </div>
     `;
@@ -800,9 +1025,8 @@ function renderResult(targetId, res, httpStatus) {
   }
 
   const prov = res.provenance || {};
-  const provHtml = prov.data_source
-    ? `<div class="provenance-tag" style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); margin-bottom:8px;">Source: ${escapeHtml(prov.data_source)}${prov.dataset ? ` · ${escapeHtml(prov.dataset)}` : ''} · ${res.latency_seconds || 0}s</div>`
-    : "";
+  const rows = res.data || [];
+  const hasMap = rows.some(r => r.lat != null && r.lon != null);
 
   let analysisCardHtml = "";
   if (res.analysis) {
@@ -829,27 +1053,29 @@ function renderResult(targetId, res, httpStatus) {
     `;
   }
 
-  const rows = res.data || [];
   let dataTabsCardHtml = "";
   let graphReportHtml = "";
 
   if (rows.length > 0 || res.sql) {
-    const hasTS = rows.length > 0 && "temperature" in rows[0] && "salinity" in rows[0];
-    const hasMap = rows.some(r => r.lat != null && r.lon != null);
-
     dataTabsCardHtml = `
-      ${sqlToggleHtml(res.sql || "")}
       <div class="card">
-        <div class="tabs">
-          <div class="tab active" data-tab="data">Data Table (${rows.length})</div>
-          <div class="tab" data-tab="chart">Depth Profile</div>
-          ${hasTS ? `<div class="tab" data-tab="tsdiagram">T-S Diagram</div>` : ''}
-          ${hasMap ? `<div class="tab" data-tab="map">Ocean Map</div>` : ''}
+        <div class="output-tabs-header">
+          <div class="output-tab-item active" data-tab="data">Data</div>
+          <div class="output-tab-item" data-tab="chart">Chart</div>
+          ${hasMap ? `<div class="output-tab-item" data-tab="map">Map</div>` : ''}
+          ${res.sql ? `<div class="output-tab-item" data-tab="sql">SQL Query</div>` : ''}
         </div>
-        <div class="tab-panel active" data-panel="data">${dataTableHtml(rows)}</div>
-        <div class="tab-panel" data-panel="chart">${chartHtml(rows)}</div>
-        ${hasTS ? `<div class="tab-panel" data-panel="tsdiagram">${tsDiagramHtml(rows)}</div>` : ''}
+        <div class="output-sub-info" data-rows="${rows.length}">
+          Showing ${Math.min(rows.length, 50)} of ${rows.length} rows
+        </div>
+        <div class="tab-panel active" data-panel="data">
+          ${dataTableHtml(rows)}
+        </div>
+        <div class="tab-panel" data-panel="chart">
+          ${chartHtml(rows)}
+        </div>
         ${hasMap ? `<div class="tab-panel" data-panel="map">${mapHtml(rows)}</div>` : ''}
+        ${res.sql ? `<div class="tab-panel" data-panel="sql">${sqlToggleHtml(res.sql || "")}</div>` : ''}
       </div>
     `;
 
@@ -861,12 +1087,21 @@ function renderResult(targetId, res, httpStatus) {
   }
 
   target.innerHTML = `
-     <span class="status-tag ok">Response ready</span>
-     ${provHtml}
-     ${analysisCardHtml}
-     ${sourcesCardHtml}
-     ${dataTabsCardHtml}
-     ${graphReportHtml}
+    <div class="unified-answer-container">
+      <div class="unified-header-bar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="status-tag ok">Response Ready</span>
+          <span class="unified-badge">${escapeHtml(prov.data_source || 'DuckDB')}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--birdhouse-brown);">${res.latency_seconds || 0}s latency</span>
+        </div>
+      </div>
+      ${analysisCardHtml}
+      ${sourcesCardHtml}
+      ${dataTabsCardHtml}
+      ${graphReportHtml}
+    </div>
   `;
 
   wireSqlToggle(target);
@@ -1159,11 +1394,25 @@ function copySql(elementId, btn) {
 function wireSqlToggle() {}
 
 function wireTabs(scope) {
-  scope.querySelectorAll(".tab").forEach(tab => {
+  scope.querySelectorAll(".tab, .output-tab-item").forEach(tab => {
     tab.addEventListener("click", () => {
       const name = tab.dataset.tab;
-      scope.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === tab));
+      scope.querySelectorAll(".tab, .output-tab-item").forEach(t => t.classList.toggle("active", t === tab));
       scope.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      
+      const subInfoEl = scope.querySelector(".output-sub-info");
+      if (subInfoEl) {
+        const rowCount = subInfoEl.dataset.rows || "0";
+        if (name === "data") {
+          subInfoEl.textContent = `Showing ${Math.min(parseInt(rowCount) || 0, 50)} of ${rowCount} rows`;
+        } else if (name === "chart") {
+          subInfoEl.textContent = "Hydrographic vertical profile & measurement visualization";
+        } else if (name === "map") {
+          subInfoEl.textContent = "Geospatial float trajectories & profile sampling locations";
+        } else if (name === "sql") {
+          subInfoEl.textContent = "DuckDB SQL query engine & execution breakdown";
+        }
+      }
       
       if (name === "map") {
         scope.querySelectorAll(".map-view").forEach(mapEl => {

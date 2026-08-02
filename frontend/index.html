@@ -36,6 +36,7 @@
     </div>
     <div class="nav-right">
       <div class="nav-status" id="statStatus"><span class="dot"></span> <span id="statText">connecting…</span></div>
+      <button class="categories-btn" id="categoriesNavBtn" aria-label="Explore Question Categories" title="Explore Curated Question Categories">Categories</button>
       <button class="analytics-btn" id="analyticsBtn" aria-label="Open Ocean Analytics Dashboard" title="Open Long-Term Ocean Analytics Dashboard">Analytics Dashboard</button>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark mode" title="Toggle theme">Theme</button>
       <button class="info-btn" id="infoBtn" aria-label="How it works" title="How it works">Help</button>
@@ -66,7 +67,7 @@
     <h2>Ask the ocean a question,<br>get a <em>real</em> answer back.</h2>
     <p>Real ARGO float sensor data from the Ifremer GDAC, translated from plain English into SQL — with charts, maps, and the query itself, every time.</p>
     <div class="chips" id="chips">
-      <div class="chip chip-highlight" data-q="start">Type 'start' or click here for All 10 Question Categories</div>
+      <div class="chip chip-highlight" id="heroCategoriesBtn" data-q="start">Explore All 10 Question Categories</div>
       <div class="chip" data-q="Show me the temperature profile of float 2902264">Temperature profile of float 2902264</div>
       <div class="chip" data-q="Compare salinity in the Arabian Sea vs Bay of Bengal">Compare salinity: Arabian Sea vs Bay of Bengal</div>
       <div class="chip" data-q="Find nearest ARGO floats to lat 12, lon 65">Nearest floats to lat 12, lon 65</div>
@@ -102,6 +103,43 @@
     </div>
     <div class="input-shell">
       <input id="queryInput" type="text" placeholder="Ask about temperature, salinity, float locations, or marine research…" autocomplete="off">
+      <div class="model-select-wrapper">
+        <button class="model-select-btn" id="modelSelectBtn" aria-label="Select AI Model" aria-haspopup="true" aria-expanded="false">
+          <span id="modelSelectText">3.6 Flash</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="model-dropdown-menu" id="modelDropdownMenu" style="display: none;">
+          <div class="model-option active" data-mode="standard">
+            <div class="model-option-check">✓</div>
+            <div class="model-option-text">
+              <div class="model-option-title">3.6 Flash</div>
+              <div class="model-option-desc">All-around ocean intelligence</div>
+            </div>
+          </div>
+          <div class="model-option" data-mode="fast">
+            <div class="model-option-check"></div>
+            <div class="model-option-text">
+              <div class="model-option-title">3.5 Flash-Lite</div>
+              <div class="model-option-desc">Fastest answers & low latency</div>
+            </div>
+          </div>
+          <div class="model-option" data-mode="thinking">
+            <div class="model-option-check"></div>
+            <div class="model-option-text">
+              <div class="model-option-title">Extended thinking</div>
+              <div class="model-option-desc">Complex hydrographic reasoning</div>
+            </div>
+          </div>
+          <div class="model-option-divider"></div>
+          <div class="model-option" data-mode="search">
+            <div class="model-option-check"></div>
+            <div class="model-option-text">
+              <div class="model-option-title">Search Grounding</div>
+              <div class="model-option-desc">Live marine science facts & sources</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <button class="send-btn" id="sendBtn" aria-label="Send question">Send</button>
     </div>
     <div class="hint" id="modeHint">Standard SQL Engine (gemini-3.6-flash) · Translates English to DuckDB SQL</div>
@@ -201,6 +239,18 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="categoriesModal" style="display:none;">
+  <div class="modal-content categories-modal-content">
+    <button class="modal-close" id="categoriesModalClose" aria-label="Close">×</button>
+    <div class="categories-header">
+      <div class="categories-badge">CURATED DOMAINS</div>
+      <h3>Explore Ocean Question Categories</h3>
+      <p class="categories-subtitle">Click any category or sample prompt to immediately query real ARGO float data</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid"></div>
   </div>
 </div>
 
