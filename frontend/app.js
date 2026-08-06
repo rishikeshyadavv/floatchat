@@ -685,7 +685,22 @@ document.addEventListener("click", (e) => {
 // ── Theme & Colors ──
 const root = document.documentElement;
 const savedTheme = localStorage.getItem("floatchat-theme");
-if (savedTheme === "light") root.classList.add("light");
+if (savedTheme === "light") {
+  root.classList.add("light");
+  root.classList.remove("dark");
+} else {
+  root.classList.remove("light");
+  root.classList.add("dark");
+}
+
+function updateThemeToggleUI() {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+  const isLight = root.classList.contains("light");
+  btn.textContent = isLight ? "☀️ Light" : "🌙 Dark";
+  btn.title = isLight ? "Switch to Dark Mode" : "Switch to Light Mode";
+}
+updateThemeToggleUI();
 
 const colors = [
   '#22d3ee', // Cyan
@@ -706,8 +721,10 @@ function getColorForIndex(idx, opacity = 1) {
 
 document.getElementById("themeToggle")?.addEventListener("click", () => {
   root.classList.toggle("light");
+  root.classList.toggle("dark");
   const isLight = root.classList.contains("light");
   localStorage.setItem("floatchat-theme", isLight ? "light" : "dark");
+  updateThemeToggleUI();
   
   // Update Chart.js themes
   document.querySelectorAll(".chart-canvas").forEach(canvas => {
@@ -763,13 +780,21 @@ document.querySelectorAll(".chip").forEach(chip => {
   });
 });
 
-// ── Input ──
+// ── Input Controls ──
 const queryInput = document.getElementById("queryInput");
 const sendBtn = document.getElementById("sendBtn");
+const startBtn = document.getElementById("startBtn");
 const clearChatBtn = document.getElementById("clearChatBtn");
 
 queryInput?.addEventListener("keydown", e => { if (e.key === "Enter") submitQuery(); });
 sendBtn?.addEventListener("click", submitQuery);
+
+startBtn?.addEventListener("click", () => {
+  if (!queryInput.value || !queryInput.value.trim()) {
+    queryInput.value = "Show me the temperature profile of float 2902264";
+  }
+  submitQuery();
+});
 
 // ── Local Storage Chat History ──
 const CHAT_HISTORY_KEY = "floatchat_session_history_v1";

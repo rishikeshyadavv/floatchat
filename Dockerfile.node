@@ -1,0 +1,30 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install build dependencies required for native C++ modules (DuckDB)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package descriptors and install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy application source and static frontend assets
+COPY . .
+
+# Set environment defaults
+ENV PORT=3000
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+CMD ["npm", "start"]

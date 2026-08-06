@@ -549,6 +549,22 @@ html.dark .input-dock {
   height: 1px; background: var(--sand-white); margin: 6px 8px;
 }
 
+.start-btn {
+  height: 46px; padding: 0 22px; border-radius: var(--radius-pill);
+  border: 2px solid var(--ink);
+  background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); color: #ffffff;
+  font-family: var(--font-display); font-size: 14px; font-weight: 700;
+  cursor: pointer; box-shadow: var(--drop-shadow-ink);
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  white-space: nowrap;
+}
+.start-btn:hover {
+  transform: translate(-1px, -1px);
+  background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
+  box-shadow: 4px 4px 0px var(--ink);
+}
+
 .send-btn {
   height: 46px; padding: 0 24px; border-radius: var(--radius-pill);
   border: 2px solid var(--ink);
