@@ -5,9 +5,9 @@
   "type": "module",
   "main": "server.ts",
   "scripts": {
-    "dev": "npx tsx server.ts",
-    "build": "echo 'No build required for server.ts'",
-    "start": "npx tsx server.ts",
+    "dev": "node --import tsx server.ts",
+    "build": "tsc --noEmit",
+    "start": "node --import tsx server.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
