@@ -1,7 +1,12 @@
-// ── FloatChat SPA ──
-// Talks to the same-origin proxy at /api/query — the browser never sees FLOAT_API_KEY.
-
+const RENDER_BACKEND_URL = "https://floatchat-k6c1.onrender.com";
 const PROXY_URL = "/api/query";
+
+function getApiUrl(endpoint) {
+  if (window.location.hostname.includes("web.app") || window.location.hostname.includes("firebaseapp.com")) {
+    return `${RENDER_BACKEND_URL}${endpoint}`;
+  }
+  return endpoint;
+}
 let msgCount = 0;
 let busy = false;
 let selectedMode = "standard";
@@ -239,7 +244,7 @@ async function loadAnalyticsDashboard() {
   }
 
   try {
-    const res = await fetch("/api/analytics/trends");
+    const res = await fetch(getApiUrl("/api/analytics/trends"));
     if (!res.ok) {
       const errMsg = `Failed to load analytics trends: Server returned status ${res.status} (${res.statusText || 'Error'}).`;
       console.error(errMsg);
@@ -749,7 +754,7 @@ async function checkStatus() {
   const dot = document.querySelector("#statStatus .dot");
   const text = document.getElementById("statText");
   try {
-    const res = await fetch("/api/health", { method: "GET" });
+    const res = await fetch(getApiUrl("/api/health"), { method: "GET" });
     if (res.ok) {
       const data = await res.json().catch(() => ({}));
       let stats = "";
@@ -931,7 +936,7 @@ async function submitQuery() {
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
 
   try {
-    const res = await fetch(PROXY_URL, {
+    const res = await fetch(getApiUrl(PROXY_URL), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
