@@ -1,16 +1,48 @@
-venv/
-__pycache__/
-*.pyc
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment & Secrets
 .env
-data/*.db-journal
-data/tmp_*
-data/*.log
-.venv/
-*.egg-info/
-.eggs/
+.env.*
+!.env.example
+
+# Build & Transpile Outputs
 dist/
 build/
+*.tsbuildinfo
+.npm
+.eslintcache
+
+# Database & Ingestion Output
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/tmp_*
+data/*.log
+
+# Python & Testing Caches
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
 .ruff_cache/
 .pytest_cache/
 .mypy_cache/
-.env
+.coverage
+coverage/
+htmlcov/
+
+# System & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
