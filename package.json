@@ -13,20 +13,20 @@
   },
   "dependencies": {
     "@google/genai": "^2.15.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.2",
     "chart.js": "^4.5.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "duckdb": "^1.4.4",
     "express": "^5.2.1",
-    "firebase-admin": "^14.2.0",
-    "firebase-functions": "^7.3.2",
+    "firebase-admin": "^10.3.0",
+    "firebase-functions": "^4.9.0",
     "hyparquet": "^1.27.1",
     "leaflet": "^1.9.4",
     "tsx": "^4.23.1",
-    "typescript": "^7.0.2",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.1.2"
+    "typescript": "^7.0.2"
   },
   "devDependencies": {
     "@types/jsdom": "^28.0.3",

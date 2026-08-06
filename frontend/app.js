@@ -1,4 +1,4 @@
-const RENDER_BACKEND_URL = "https://floatchat-k6c1.onrender.com";
+const RENDER_BACKEND_URL = "https://floatchat-uo10.onrender.com";
 const PROXY_URL = "/api/query";
 
 function getApiUrl(endpoint) {
@@ -945,7 +945,23 @@ async function submitQuery() {
         location: userCoords
       }),
     });
-    const data = await res.json();
+    
+    let data;
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      data = await res.json().catch(() => null);
+    }
+    
+    if (!data) {
+      const rawText = await res.text().catch(() => "");
+      data = {
+        success: false,
+        error: res.status === 404 
+          ? "Backend API endpoint not found (404). Please verify that the Render service is deployed as a Web Service (Node server) and not a Static Site."
+          : `Backend returned non-JSON status (${res.status}): ${rawText.slice(0, 120) || 'No response body'}`
+      };
+    }
+    
     renderResult(targetId, data, res.status);
     saveQueryToHistory({
       question,
