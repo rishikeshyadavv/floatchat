@@ -6,8 +6,8 @@
   "main": "server.ts",
   "scripts": {
     "dev": "node --import tsx server.ts",
-    "build": "tsc --noEmit",
-    "start": "node --import tsx server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
