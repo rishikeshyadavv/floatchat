@@ -1,35 +1,33 @@
-FROM python:3.12-slim
+FROM node:20-slim
 
 WORKDIR /app
 
-# Install system dependencies for psycopg2, NetCDF parsing, and Parquet/Snappy
+# Install build dependencies required for native C++ modules (DuckDB)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    libsnappy-dev \
+    python3 \
+    make \
+    g++ \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package descriptors and install dependencies
+COPY package*.json ./
+RUN npm install
 
-# Copy source code, frontend, and entrypoint
-COPY src/ ./src/
-COPY frontend/ ./frontend/
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x docker-entrypoint.sh
+# Copy application source and static assets
+COPY . .
 
-# FIX H5: Run as non-root user to limit blast radius of any container escape
-RUN useradd --uid 1001 --no-create-home --shell /bin/false appuser \
-    && chown -R appuser:appuser /app
-USER appuser
+# Compile TypeScript to JavaScript
+RUN npm run build
 
-# FIX H5: HEALTHCHECK so orchestrators can detect unhealthy containers
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+# Set environment defaults
+ENV PORT=10000
+ENV NODE_ENV=production
 
-EXPOSE 8000
+EXPOSE 10000
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
-CMD ["uvicorn", "src.backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:10000/api/health || exit 1
+
+CMD ["npm", "start"]
