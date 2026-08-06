@@ -39,10 +39,12 @@ __pycache__/
 coverage/
 htmlcov/
 
-# System & IDE Files
+# System, Firebase & IDE Files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 *.swp
 *.swo
+.firebase/
+firebase-debug.log

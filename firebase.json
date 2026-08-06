@@ -1,0 +1,40 @@
+{
+  "hosting": {
+    "public": "frontend",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/static/vendor/chart.js",
+        "destination": "/vendor/chart.js"
+      },
+      {
+        "source": "/static/vendor/leaflet.js",
+        "destination": "/vendor/leaflet.js"
+      },
+      {
+        "source": "/static/vendor/leaflet.css",
+        "destination": "/vendor/leaflet.css"
+      },
+      {
+        "source": "/static/style.css",
+        "destination": "/style.css"
+      },
+      {
+        "source": "/static/app.js",
+        "destination": "/app.js"
+      },
+      {
+        "source": "/api/**",
+        "function": "api"
+      },
+      {
+        "source": "/ask",
+        "function": "api"
+      }
+    ]
+  }
+}

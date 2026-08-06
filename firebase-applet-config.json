@@ -1,11 +1,11 @@
 {
-  "projectId": "trusty-unfolding-ggtt6",
-  "appId": "1:550476560306:web:6b8891c88fa86b2edad6ab",
-  "apiKey": "AIzaSyBVwHOjAf3V_sAc3W_M_2DAzM3hUKGuDhE",
-  "authDomain": "trusty-unfolding-ggtt6.firebaseapp.com",
-  "storageBucket": "trusty-unfolding-ggtt6.firebasestorage.app",
-  "messagingSenderId": "550476560306",
+  "projectId": "floatchat-argo-ai",
+  "appId": "1:851332144161:web:ea22d009e7d251cbcc5760",
+  "apiKey": "AIzaSyC_zKxVONTx7XUAUcjEGNcPP6e2GbZRM80",
+  "authDomain": "floatchat-argo-ai.firebaseapp.com",
+  "storageBucket": "floatchat-argo-ai.firebasestorage.app",
+  "messagingSenderId": "851332144161",
   "measurementId": "",
-  "oAuthClientId": "550476560306-cs9r8mr66tdl7r58oh60esdkv9t99r1t.apps.googleusercontent.com",
+  "oAuthClientId": "",
   "recaptchaSiteKey": ""
 }

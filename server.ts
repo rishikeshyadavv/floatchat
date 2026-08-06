@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { onRequest } from 'firebase-functions/https';
 import { initDatabase, queryDb } from './src/db.js';
 import { runQueryWithRetry } from './src/agent.js';
 
@@ -387,15 +388,21 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Initialize database and start server
-initDatabase().then(({ rows, floats }) => {
-  console.log(`Database initialized: ${floats} floats, ${rows} readings.`);
-  app.listen(PORT, HOST, () => {
-    console.log(`FloatChat backend listening at http://${HOST}:${PORT}`);
+// Initialize database and start server (if running standalone server)
+if (!process.env.FUNCTION_NAME && !process.env.K_SERVICE) {
+  initDatabase().then(({ rows, floats }) => {
+    console.log(`Database initialized: ${floats} floats, ${rows} readings.`);
+    app.listen(PORT, HOST, () => {
+      console.log(`FloatChat backend listening at http://${HOST}:${PORT}`);
+    });
+  }).catch(err => {
+    console.error('Failed to initialize database:', err);
+    app.listen(PORT, HOST, () => {
+      console.log(`FloatChat backend listening at http://${HOST}:${PORT} (uninitialized DB)`);
+    });
   });
-}).catch(err => {
-  console.error('Failed to initialize database:', err);
-  app.listen(PORT, HOST, () => {
-    console.log(`FloatChat backend listening at http://${HOST}:${PORT} (uninitialized DB)`);
-  });
-});
+}
+
+// Export as Firebase 2nd-gen Cloud Function
+export const api = onRequest({ memory: '1GiB', timeoutSeconds: 60, cors: true }, app);
+
