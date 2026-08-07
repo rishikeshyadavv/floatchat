@@ -322,7 +322,7 @@ Theme persists via `localStorage`. Default: **Light Theme**.
 
 ---
 
-## 📜 License & Acknowledgments
+## 📜 License & Acknowledgments:
 
 Built for **Smart India Hackathon 2026** — Problem Statement **SIH25040** (Ministry of Earth Sciences, Government of India).
 
