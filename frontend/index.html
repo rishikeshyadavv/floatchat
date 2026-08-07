@@ -1,262 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FloatChat — Ocean Data Explorer</title>
-<link rel="icon" href="/static/assets/favicon.ico" type="image/x-icon">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/static/vendor/leaflet.css">
-<link rel="stylesheet" href="/static/style.css?v=2.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FloatChat — Ocean Data Explorer</title>
+  <link rel="icon" href="/static/assets/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/vendor/leaflet.css">
+  <link rel="stylesheet" href="/static/style.css?v=2.0">
 </head>
+
 <body>
 
-<div class="depth-rail" aria-hidden="true">
-  <span>0m</span><span>150m</span><span>300m</span><span>450m</span><span>600m</span><span>1000m</span><span>2000m</span>
-</div>
-
-<div class="app">
-  <div class="nav">
-    <div class="brand">
-      <svg class="brand-logo" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 2V22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M11 7H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M13 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M6 22C9.5 22 11.5 24 16 24C20.5 24 22.5 22 26 22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M4 27C8 27 10 29 16 29C22 29 24 27 28 27" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="16" cy="4" r="2.5" fill="currentColor"/>
-      </svg>
-      <div class="brand-text-wrap">
-        <span class="brand-title">FloatChat</span>
-        <span class="brand-subtitle">ARGO OCEAN INTELLIGENCE</span>
-      </div>
-      <span class="stamp-badge">ARGO GDAC REALTIME</span>
-    </div>
-    <div class="nav-right">
-      <div class="nav-status" id="statStatus"><span class="dot"></span> <span id="statText">connecting…</span></div>
-      <button class="categories-btn" id="categoriesNavBtn" aria-label="Explore Question Categories" title="Explore Curated Question Categories">Categories</button>
-      <button class="analytics-btn" id="analyticsBtn" aria-label="Open Ocean Analytics Dashboard" title="Open Long-Term Ocean Analytics Dashboard">Analytics Dashboard</button>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark mode" title="Toggle theme">Theme</button>
-      <button class="info-btn" id="infoBtn" aria-label="How it works" title="How it works">Help</button>
-    </div>
+  <div class="depth-rail" aria-hidden="true">
+    <span>0m</span><span>150m</span><span>300m</span><span>450m</span><span>600m</span><span>1000m</span><span>2000m</span>
   </div>
 
-  <div class="metrics-bar" id="metricsBar">
-    <div class="metric-item">
-      <span class="metric-label">Active ARGO Floats</span>
-      <span class="metric-val" id="metricFloats">8 Active</span>
-    </div>
-    <div class="metric-item">
-      <span class="metric-label">Profiles & Measurements</span>
-      <span class="metric-val" id="metricRows">480 Profiles</span>
-    </div>
-    <div class="metric-item">
-      <span class="metric-label">Ocean Basin Coverage</span>
-      <span class="metric-val">Arabian Sea · Bay of Bengal · Equatorial</span>
-    </div>
-    <div class="metric-item">
-      <span class="metric-label">BGC Sensor Array</span>
-      <span class="metric-val">O₂ · Chl-a · pH · NO₃ · CDOM</span>
-    </div>
-  </div>
-
-  <div class="hero" id="hero">
-    <div class="eyebrow">Conversational ocean intelligence</div>
-    <h2>Ask the ocean a question,<br>get a <em>real</em> answer back.</h2>
-    <p>Real ARGO float sensor data from the Ifremer GDAC, translated from plain English into SQL — with charts, maps, and the query itself, every time.</p>
-    <div class="chips" id="chips">
-      <div class="chip chip-highlight" id="heroCategoriesBtn" data-q="start">Explore All 10 Question Categories</div>
-      <div class="chip" data-q="Show me the temperature profile of float 2902264">Temperature profile of float 2902264</div>
-      <div class="chip" data-q="Compare salinity in the Arabian Sea vs Bay of Bengal">Compare salinity: Arabian Sea vs Bay of Bengal</div>
-      <div class="chip" data-q="Find nearest ARGO floats to lat 12, lon 65">Nearest floats to lat 12, lon 65</div>
-    </div>
-  </div>
-
-  <div class="thread" id="thread"></div>
-</div>
-
-<div class="input-dock">
-  <div class="input-wrap">
-    <div class="dock-top-bar">
-      <div class="ai-mode-bar" id="aiModeBar">
-        <span class="mode-label">AI Mode:</span>
-        <button class="mode-btn active" data-mode="standard" title="Standard Gemini SQL Translation (gemini-3.6-flash)">
-          <span>Standard</span>
-        </button>
-        <button class="mode-btn" data-mode="fast" title="Low-latency Fast Response (gemini-3.1-flash-lite)">
-          <span>Low Latency</span>
-        </button>
-        <button class="mode-btn" data-mode="thinking" title="High Thinking Deep Reasoning (gemini-3.6-flash)">
-          <span>High Thinking</span>
-        </button>
-        <button class="mode-btn" data-mode="search" title="Google Search Grounding for Live Marine Science & Facts">
-          <span>Search Grounding</span>
-        </button>
+  <div class="app">
+    <div class="nav">
+      <div class="brand">
+        <svg class="brand-logo" width="32" height="32" viewBox="0 0 32 32" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2V22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <path d="M11 7H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M13 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          <path d="M6 22C9.5 22 11.5 24 16 24C20.5 24 22.5 22 26 22" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" />
+          <path d="M4 27C8 27 10 29 16 29C22 29 24 27 28 27" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" />
+          <circle cx="16" cy="4" r="2.5" fill="currentColor" />
+        </svg>
+        <div class="brand-text-wrap">
+          <span class="brand-title">FloatChat</span>
+          <span class="brand-subtitle">ARGO OCEAN INTELLIGENCE</span>
+        </div>
+        <span class="stamp-badge">ARGO GDAC REALTIME</span>
       </div>
-      <div class="clear-chat-container">
-        <button id="clearChatBtn" class="clear-chat-btn">
-          <span>Clear Chat</span>
-        </button>
+      <div class="nav-right">
+        <div class="nav-status" id="statStatus"><span class="dot"></span> <span id="statText">connecting…</span></div>
+        <button class="categories-btn" id="categoriesNavBtn" aria-label="Explore Question Categories"
+          title="Explore Curated Question Categories">Categories</button>
+        <button class="analytics-btn" id="analyticsBtn" aria-label="Open Ocean Analytics Dashboard"
+          title="Open Long-Term Ocean Analytics Dashboard">Analytics Dashboard</button>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark mode"
+          title="Toggle theme">Theme</button>
+        <button class="info-btn" id="infoBtn" aria-label="How it works" title="How it works">Help</button>
       </div>
     </div>
-    <div class="input-shell">
-      <input id="queryInput" type="text" placeholder="Ask about temperature, salinity, float locations, or marine research…" autocomplete="off">
-      <div class="model-select-wrapper">
-        <button class="model-select-btn" id="modelSelectBtn" aria-label="Select AI Model" aria-haspopup="true" aria-expanded="false">
-          <span id="modelSelectText">3.6 Flash</span>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="model-dropdown-menu" id="modelDropdownMenu" style="display: none;">
-          <div class="model-option active" data-mode="standard">
-            <div class="model-option-check">✓</div>
-            <div class="model-option-text">
-              <div class="model-option-title">3.6 Flash</div>
-              <div class="model-option-desc">All-around ocean intelligence</div>
+
+    <div class="metrics-bar" id="metricsBar">
+      <div class="metric-item">
+        <span class="metric-label">Active ARGO Floats</span>
+        <span class="metric-val" id="metricFloats">8 Active</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Profiles & Measurements</span>
+        <span class="metric-val" id="metricRows">480 Profiles</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Ocean Basin Coverage</span>
+        <span class="metric-val">Arabian Sea · Bay of Bengal · Equatorial</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">BGC Sensor Array</span>
+        <span class="metric-val">O₂ · Chl-a · pH · NO₃ · CDOM</span>
+      </div>
+    </div>
+
+    <div class="hero" id="hero">
+      <div class="eyebrow">Conversational ocean intelligence</div>
+      <h2>Ask the ocean a question,<br>get a <em>real</em> answer back.</h2>
+      <p>Real ARGO float sensor data from the Ifremer GDAC, translated from plain English into SQL — with charts, maps,
+        and the query itself, every time.</p>
+      <div class="chips" id="chips">
+        <div class="chip chip-highlight" id="heroCategoriesBtn" data-q="start">Explore All 10 Question Categories</div>
+        <div class="chip" data-q="Show me the temperature profile of float 2902264">Temperature profile of float 2902264
+        </div>
+        <div class="chip" data-q="Compare salinity in the Arabian Sea vs Bay of Bengal">Compare salinity: Arabian Sea vs
+          Bay of Bengal</div>
+        <div class="chip" data-q="Find nearest ARGO floats to lat 12, lon 65">Nearest floats to lat 12, lon 65</div>
+      </div>
+    </div>
+
+    <div class="thread" id="thread"></div>
+  </div>
+
+  <div class="input-dock">
+    <div class="input-wrap">
+      <div class="dock-top-bar">
+        <div class="ai-mode-bar" id="aiModeBar">
+          <span class="mode-label">AI Mode:</span>
+          <button class="mode-btn active" data-mode="standard"
+            title="Standard Gemini SQL Translation (gemini-3.6-flash)">
+            <span>Standard</span>
+          </button>
+          <button class="mode-btn" data-mode="fast" title="Low-latency Fast Response (gemini-3.1-flash-lite)">
+            <span>Low Latency</span>
+          </button>
+          <button class="mode-btn" data-mode="thinking" title="High Thinking Deep Reasoning (gemini-3.6-flash)">
+            <span>High Thinking</span>
+          </button>
+        </div>
+        <div class="clear-chat-container">
+          <button id="clearChatBtn" class="clear-chat-btn">
+            <span>Clear Chat</span>
+          </button>
+        </div>
+      </div>
+      <div class="input-shell">
+        <input id="queryInput" type="text"
+          placeholder="Ask about temperature, salinity, float locations, or marine research…" autocomplete="off">
+        <div class="model-select-wrapper">
+          <button class="model-select-btn" id="modelSelectBtn" aria-label="Select AI Model" aria-haspopup="true"
+            aria-expanded="false">
+            <span id="modelSelectText">3.6 Flash</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="model-dropdown-menu" id="modelDropdownMenu" style="display: none;">
+            <div class="model-option active" data-mode="standard">
+              <div class="model-option-check">✓</div>
+              <div class="model-option-text">
+                <div class="model-option-title">3.6 Flash</div>
+                <div class="model-option-desc">All-around ocean intelligence</div>
+              </div>
+            </div>
+            <div class="model-option" data-mode="fast">
+              <div class="model-option-check"></div>
+              <div class="model-option-text">
+                <div class="model-option-title">3.5 Flash-Lite</div>
+                <div class="model-option-desc">Fastest answers & low latency</div>
+              </div>
+            </div>
+            <div class="model-option" data-mode="thinking">
+              <div class="model-option-check"></div>
+              <div class="model-option-text">
+                <div class="model-option-title">Extended thinking</div>
+                <div class="model-option-desc">Complex hydrographic reasoning</div>
+              </div>
             </div>
           </div>
-          <div class="model-option" data-mode="fast">
-            <div class="model-option-check"></div>
-            <div class="model-option-text">
-              <div class="model-option-title">3.5 Flash-Lite</div>
-              <div class="model-option-desc">Fastest answers & low latency</div>
-            </div>
+        </div>
+        <button class="send-btn" id="sendBtn" aria-label="Send question">Send</button>
+      </div>
+      <div class="hint" id="modeHint">Standard SQL Engine (gemini-3.6-flash) · Translates English to DuckDB SQL</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="infoModal" style="display:none;">
+    <div class="modal-content">
+      <button class="modal-close" id="infoModalClose" aria-label="Close">×</button>
+      <h3>How it works</h3>
+      <ol>
+        <li><strong>Type your question</strong> in plain English — no SQL needed.</li>
+        <li><strong>The AI translates</strong> it into a read-only SQL query using Groq's Llama 3.3-70B (or Gemini as
+          fallback).</li>
+        <li><strong>The query runs</strong> against the ARGO float database (DuckDB locally, TimescaleDB in Docker).
+        </li>
+        <li><strong>Results return</strong> as a data table, with auto-generated depth/temperature charts and
+          interactive maps.</li>
+        <li><strong>Safety first</strong> — destructive SQL (DROP, DELETE, ATTACH, etc.) is blocked; query logs are
+          protected from exfiltration.</li>
+      </ol>
+      <p style="margin-top:16px; font-size:13px; color:var(--text-dim);">Set `GROQ_API_KEY` and/or `GEMINI_API_KEY` in
+        `.env` for live LLM-powered SQL generation. Without API keys, the backend will process queries using the
+        built-in sample data.</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="analyticsModal" style="display:none;">
+    <div class="modal-content analytics-modal-content">
+      <button class="modal-close" id="analyticsModalClose" aria-label="Close">×</button>
+      <div class="analytics-header">
+        <h3>Long-Term Ocean Trends & Hydrographic Analytics</h3>
+        <p class="analytics-subtitle">Multi-Year Hydrographic & Biogeochemical Dataset Metrics across Indian Ocean ARGO
+          Floats</p>
+
+        <div class="analytics-kpi-bar" id="analyticsKpiBar">
+          <div class="kpi-box"><span class="kpi-num" id="kpiFloats">8</span><span class="kpi-lbl">Active Floats</span>
           </div>
-          <div class="model-option" data-mode="thinking">
-            <div class="model-option-check"></div>
-            <div class="model-option-text">
-              <div class="model-option-title">Extended thinking</div>
-              <div class="model-option-desc">Complex hydrographic reasoning</div>
-            </div>
+          <div class="kpi-box"><span class="kpi-num" id="kpiProfiles">480</span><span class="kpi-lbl">Profiles
+              Recorded</span></div>
+          <div class="kpi-box"><span class="kpi-num" id="kpiDepth">0 - 2000m</span><span class="kpi-lbl">Vertical Depth
+              Range</span></div>
+          <div class="kpi-box"><span class="kpi-num" id="kpiOmz">14.5 µmol/kg</span><span class="kpi-lbl">Min O₂ (OMZ
+              Core)</span></div>
+          <div class="kpi-box"><span class="kpi-num" id="kpiQc">100%</span><span class="kpi-lbl">Validated QC Flag
+              1</span></div>
+        </div>
+        <div id="analyticsError"
+          style="display:none; padding:12px 16px; margin-top:12px; border-radius:8px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; font-size:13px;">
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card full-width">
+          <div class="analytics-card-title">
+            <span>Long-Term Temperature & Salinity Trajectory (Temporal Trend)</span>
+            <span class="analytics-card-tag">Time Series</span>
           </div>
-          <div class="model-option-divider"></div>
-          <div class="model-option" data-mode="search">
-            <div class="model-option-check"></div>
-            <div class="model-option-text">
-              <div class="model-option-title">Search Grounding</div>
-              <div class="model-option-desc">Live marine science facts & sources</div>
-            </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="timeSeriesChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card full-width">
+          <div class="analytics-card-title">
+            <span>Biogeochemical Profile & Oxygen Minimum Zone (OMZ Dip & DCM Peak)</span>
+            <span class="analytics-card-tag">BGC Vertical Profile</span>
+          </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="bgcNutrientsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-title">
+            <span>Thermal & Halocline Depth Stratification</span>
+            <span class="analytics-card-tag">Depth Layers</span>
+          </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="depthZoneChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-title">
+            <span>Regional Basin Hydrographic Comparison</span>
+            <span class="analytics-card-tag">Ocean Basins</span>
+          </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="regionalChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-title">
+            <span>Quality Control (QC) Data Integrity Audit</span>
+            <span class="analytics-card-tag">QC Verification</span>
+          </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="qcChart"></canvas>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-title">
+            <span>ARGO Fleet Configuration Breakdown</span>
+            <span class="analytics-card-tag">Float Types</span>
+          </div>
+          <div class="analytics-chart-wrapper">
+            <canvas id="fleetChart"></canvas>
           </div>
         </div>
       </div>
-      <button class="start-btn" id="startBtn" aria-label="Start AI Query Processing" title="Start Query Engine">🚀 Start</button>
-      <button class="send-btn" id="sendBtn" aria-label="Send question">Send</button>
-    </div>
-    <div class="hint" id="modeHint">Standard SQL Engine (gemini-3.6-flash) · Translates English to DuckDB SQL</div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="infoModal" style="display:none;">
-  <div class="modal-content">
-    <button class="modal-close" id="infoModalClose" aria-label="Close">×</button>
-    <h3>How it works</h3>
-    <ol>
-      <li><strong>Type your question</strong> in plain English — no SQL needed.</li>
-      <li><strong>The AI translates</strong> it into a read-only SQL query using Groq's Llama 3.3-70B (or Gemini as fallback).</li>
-      <li><strong>The query runs</strong> against the ARGO float database (DuckDB locally, TimescaleDB in Docker).</li>
-      <li><strong>Results return</strong> as a data table, with auto-generated depth/temperature charts and interactive maps.</li>
-      <li><strong>Safety first</strong> — destructive SQL (DROP, DELETE, ATTACH, etc.) is blocked; query logs are protected from exfiltration.</li>
-    </ol>
-    <p style="margin-top:16px; font-size:13px; color:var(--text-dim);">Set `GROQ_API_KEY` and/or `GEMINI_API_KEY` in `.env` for live LLM-powered SQL generation. Without API keys, the backend will process queries using the built-in sample data.</p>
-  </div>
-</div>
-
-<div class="modal-overlay" id="analyticsModal" style="display:none;">
-  <div class="modal-content analytics-modal-content">
-    <button class="modal-close" id="analyticsModalClose" aria-label="Close">×</button>
-    <div class="analytics-header">
-      <h3>Long-Term Ocean Trends & Hydrographic Analytics</h3>
-      <p class="analytics-subtitle">Multi-Year Hydrographic & Biogeochemical Dataset Metrics across Indian Ocean ARGO Floats</p>
-      
-      <div class="analytics-kpi-bar" id="analyticsKpiBar">
-        <div class="kpi-box"><span class="kpi-num" id="kpiFloats">8</span><span class="kpi-lbl">Active Floats</span></div>
-        <div class="kpi-box"><span class="kpi-num" id="kpiProfiles">480</span><span class="kpi-lbl">Profiles Recorded</span></div>
-        <div class="kpi-box"><span class="kpi-num" id="kpiDepth">0 - 2000m</span><span class="kpi-lbl">Vertical Depth Range</span></div>
-        <div class="kpi-box"><span class="kpi-num" id="kpiOmz">14.5 µmol/kg</span><span class="kpi-lbl">Min O₂ (OMZ Core)</span></div>
-        <div class="kpi-box"><span class="kpi-num" id="kpiQc">100%</span><span class="kpi-lbl">Validated QC Flag 1</span></div>
-      </div>
-      <div id="analyticsError" style="display:none; padding:12px 16px; margin-top:12px; border-radius:8px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; font-size:13px;"></div>
-    </div>
-    
-    <div class="analytics-grid">
-      <div class="analytics-card full-width">
-        <div class="analytics-card-title">
-          <span>Long-Term Temperature & Salinity Trajectory (Temporal Trend)</span>
-          <span class="analytics-card-tag">Time Series</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="timeSeriesChart"></canvas>
-        </div>
-      </div>
-
-      <div class="analytics-card full-width">
-        <div class="analytics-card-title">
-          <span>Biogeochemical Profile & Oxygen Minimum Zone (OMZ Dip & DCM Peak)</span>
-          <span class="analytics-card-tag">BGC Vertical Profile</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="bgcNutrientsChart"></canvas>
-        </div>
-      </div>
-
-      <div class="analytics-card">
-        <div class="analytics-card-title">
-          <span>Thermal & Halocline Depth Stratification</span>
-          <span class="analytics-card-tag">Depth Layers</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="depthZoneChart"></canvas>
-        </div>
-      </div>
-
-      <div class="analytics-card">
-        <div class="analytics-card-title">
-          <span>Regional Basin Hydrographic Comparison</span>
-          <span class="analytics-card-tag">Ocean Basins</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="regionalChart"></canvas>
-        </div>
-      </div>
-
-      <div class="analytics-card">
-        <div class="analytics-card-title">
-          <span>Quality Control (QC) Data Integrity Audit</span>
-          <span class="analytics-card-tag">QC Verification</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="qcChart"></canvas>
-        </div>
-      </div>
-
-      <div class="analytics-card">
-        <div class="analytics-card-title">
-          <span>ARGO Fleet Configuration Breakdown</span>
-          <span class="analytics-card-tag">Float Types</span>
-        </div>
-        <div class="analytics-chart-wrapper">
-          <canvas id="fleetChart"></canvas>
-        </div>
-      </div>
     </div>
   </div>
-</div>
 
-<div class="modal-overlay" id="categoriesModal" style="display:none;">
-  <div class="modal-content categories-modal-content">
-    <button class="modal-close" id="categoriesModalClose" aria-label="Close">×</button>
-    <div class="categories-header">
-      <div class="categories-badge">CURATED DOMAINS</div>
-      <h3>Explore Ocean Question Categories</h3>
-      <p class="categories-subtitle">Click any category or sample prompt to immediately query real ARGO float data</p>
+  <div class="modal-overlay" id="categoriesModal" style="display:none;">
+    <div class="modal-content categories-modal-content">
+      <button class="modal-close" id="categoriesModalClose" aria-label="Close">×</button>
+      <div class="categories-header">
+        <div class="categories-badge">CURATED DOMAINS</div>
+        <h3>Explore Ocean Question Categories</h3>
+        <p class="categories-subtitle">Click any category or sample prompt to immediately query real ARGO float data</p>
+      </div>
+      <div class="categories-grid" id="categoriesGrid"></div>
     </div>
-    <div class="categories-grid" id="categoriesGrid"></div>
   </div>
-</div>
 
-<script src="/static/vendor/leaflet.js"></script>
-<script src="/static/vendor/chart.js"></script>
-<script src="/static/app.js?v=1.6"></script>
+  <script src="/static/vendor/leaflet.js"></script>
+  <script src="/static/vendor/chart.js"></script>
+  <script src="/static/app.js?v=1.6"></script>
 </body>
+
 </html>

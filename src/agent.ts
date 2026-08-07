@@ -387,8 +387,8 @@ export async function runQueryWithRetry(
   const greetings = ['hi', 'hello', 'hey', 'greetings', 'yo', 'help', 'who are you', 'what is this'];
   if (greetings.includes(cleanQ)) {
     return {
-      success: false,
-      error: "Hello! I am FloatChat, your conversational assistant for ARGO oceanographic floats. Type 'start' anytime to explore all 8 categorized question sets, or ask directly about temperature, salinity, or float profiles!",
+      success: true,
+      analysis: "Hello! I am FloatChat, your conversational assistant for ARGO oceanographic floats. Explore our oceanography categories using the **Categories** button above, or ask directly about temperature, salinity, or float profiles!",
       sql: 'SELECT * FROM floats LIMIT 5;',
       latency_seconds: 0.01,
       provenance: { data_source: 'system' }

@@ -1,0 +1,32 @@
+{
+  "rewrites": [
+    {
+      "source": "/static/vendor/chart.js",
+      "destination": "/frontend/vendor/chart.js"
+    },
+    {
+      "source": "/static/vendor/leaflet.js",
+      "destination": "/frontend/vendor/leaflet.js"
+    },
+    {
+      "source": "/static/vendor/leaflet.css",
+      "destination": "/frontend/vendor/leaflet.css"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "/frontend/$1"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/ask",
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
+    }
+  ]
+}

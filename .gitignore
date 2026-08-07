@@ -48,3 +48,4 @@ Thumbs.db
 *.swo
 .firebase/
 firebase-debug.log
+.vercel

@@ -289,7 +289,7 @@ async function loadAnalyticsDashboard() {
       const tsCanvas = document.getElementById("timeSeriesChart");
       if (tsCanvas) {
         if (analyticsCharts.timeSeries) analyticsCharts.timeSeries.destroy();
-        
+
         const dates = (data.timeSeries || []).map(t => t.date);
         const temps = (data.timeSeries || []).map(t => t.avg_temp);
         const sals = (data.timeSeries || []).map(t => t.avg_sal);
@@ -422,7 +422,7 @@ async function loadAnalyticsDashboard() {
               legend: { labels: { color: textColor, font: { family: 'IBM Plex Mono', size: 11 } } },
               tooltip: {
                 callbacks: {
-                  label: function(ctx) {
+                  label: function (ctx) {
                     if (ctx.datasetIndex === 1) {
                       return `Chl-a: ${(ctx.raw / 100).toFixed(3)} mg/m³`;
                     }
@@ -730,7 +730,7 @@ document.getElementById("themeToggle")?.addEventListener("click", () => {
   const isLight = root.classList.contains("light");
   localStorage.setItem("floatchat-theme", isLight ? "light" : "dark");
   updateThemeToggleUI();
-  
+
   // Update Chart.js themes
   document.querySelectorAll(".chart-canvas").forEach(canvas => {
     if (canvas._chartInstance) {
@@ -827,7 +827,7 @@ function saveQueryToHistory(item) {
 function clearChatHistory() {
   try {
     localStorage.removeItem(CHAT_HISTORY_KEY);
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function loadChatHistory() {
@@ -945,23 +945,23 @@ async function submitQuery() {
         location: userCoords
       }),
     });
-    
+
     let data;
     const contentType = res.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       data = await res.json().catch(() => null);
     }
-    
+
     if (!data) {
       const rawText = await res.text().catch(() => "");
       data = {
         success: false,
-        error: res.status === 404 
+        error: res.status === 404
           ? "Backend API endpoint not found (404). Please verify that the Render service is deployed as a Web Service (Node server) and not a Static Site."
           : `Backend returned non-JSON status (${res.status}): ${rawText.slice(0, 120) || 'No response body'}`
       };
     }
-    
+
     renderResult(targetId, data, res.status);
     saveQueryToHistory({
       question,
@@ -1176,7 +1176,7 @@ function buildGraphReportCardHtml(rows, chartId) {
     if (r.avg_chlorophyll != null) chlas.push(r.avg_chlorophyll);
   });
 
-  const avg = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : null;
+  const avg = arr => arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2) : null;
   const min = arr => arr.length ? Math.min(...arr).toFixed(1) : null;
   const max = arr => arr.length ? Math.max(...arr).toFixed(1) : null;
 
@@ -1230,7 +1230,7 @@ function initGraphReportChart(rows, chartId) {
   if (!canvas || !rows || !rows.length) return;
 
   if (canvas._chartInstance) {
-    try { canvas._chartInstance.destroy(); } catch (e) {}
+    try { canvas._chartInstance.destroy(); } catch (e) { }
   }
 
   const isLight = document.documentElement.classList.contains("light");
@@ -1267,10 +1267,10 @@ function initGraphReportChart(rows, chartId) {
         if (r.avg_oxygen != null) bins[b].oxygens.push(Number(r.avg_oxygen));
       });
 
-      const sortedDepths = Object.keys(bins).map(Number).sort((a,b) => a - b);
+      const sortedDepths = Object.keys(bins).map(Number).sort((a, b) => a - b);
       const labels = sortedDepths.map(d => `${d}m`);
 
-      const avg = arr => arr.length ? +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : null;
+      const avg = arr => arr.length ? +(arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2) : null;
       const temps = sortedDepths.map(d => avg(bins[d].temps));
       const sals = sortedDepths.map(d => avg(bins[d].sals));
       const oxygens = sortedDepths.map(d => avg(bins[d].oxygens));
@@ -1329,7 +1329,7 @@ function initGraphReportChart(rows, chartId) {
       };
     }
   } else if (hasDate) {
-    let sortedRows = [...rows].filter(r => r.date != null).sort((a,b) => String(a.date).localeCompare(String(b.date)));
+    let sortedRows = [...rows].filter(r => r.date != null).sort((a, b) => String(a.date).localeCompare(String(b.date)));
     if (sortedRows.length > 30) {
       const step = Math.ceil(sortedRows.length / 30);
       sortedRows = sortedRows.filter((_, i) => i % step === 0);
@@ -1374,7 +1374,7 @@ function initGraphReportChart(rows, chartId) {
     const labelKey = hasRegion ? 'region' : (hasFloat ? (keys.includes('float_id') ? 'float_id' : 'wmo') : keys[0]);
     const labels = rows.slice(0, 15).map(r => String(r[labelKey]));
     const numericKeys = keys.filter(k => typeof rows[0][k] === 'number' && k !== 'id' && k !== 'qc_flag');
-    
+
     const datasets = numericKeys.slice(0, 3).map((numKey, idx) => {
       const colors = ['#22d3ee', '#f5a524', '#a855f7', '#10b981'];
       return {
@@ -1437,7 +1437,7 @@ function copySql(elementId, btn) {
     });
   }
 }
-function wireSqlToggle() {}
+function wireSqlToggle() { }
 
 function wireTabs(scope) {
   scope.querySelectorAll(".tab, .output-tab-item").forEach(tab => {
@@ -1445,7 +1445,7 @@ function wireTabs(scope) {
       const name = tab.dataset.tab;
       scope.querySelectorAll(".tab, .output-tab-item").forEach(t => t.classList.toggle("active", t === tab));
       scope.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("active", p.dataset.panel === name));
-      
+
       const subInfoEl = scope.querySelector(".output-sub-info");
       if (subInfoEl) {
         const rowCount = subInfoEl.dataset.rows || "0";
@@ -1459,7 +1459,7 @@ function wireTabs(scope) {
           subInfoEl.textContent = "DuckDB SQL query engine & execution breakdown";
         }
       }
-      
+
       if (name === "map") {
         scope.querySelectorAll(".map-view").forEach(mapEl => {
           if (mapEl._leafletMap) {
@@ -1469,7 +1469,7 @@ function wireTabs(scope) {
           }
         });
       }
-      
+
       if (name === "chart") {
         scope.querySelectorAll(".chart-canvas").forEach(canvas => {
           if (canvas._chartInstance) {
@@ -1578,7 +1578,7 @@ function initChartJS(canvas) {
   const metric = canvas._chartMetric;
   const isLight = document.documentElement.classList.contains("light");
   const label = metric === "temperature" ? "Temperature (°C)" : "Salinity (PSU)";
-  
+
   const datasets = {};
   rows.forEach(r => {
     if (r.depth == null || r[metric] == null) return;
@@ -1648,7 +1648,7 @@ function initChartJS(canvas) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               return `${context.dataset.label}: ${context.raw.x} (${label}) at ${context.raw.y}m depth`;
             }
           }
@@ -1698,7 +1698,7 @@ function initTSDiagramJS(canvas) {
     if (r.temperature == null || r.salinity == null) return;
     const floatId = r.float_id || "Float Data";
     if (!floatGroups[floatId]) floatGroups[floatId] = [];
-    
+
     // Approximate Potential Density Anomaly (Sigma-Theta)
     // sigma_theta = 0.8 * salinity - 0.2 * temperature + 20
     const sigma = Number((0.805 * r.salinity - 0.198 * r.temperature + 0.05 * (r.depth ? r.depth / 1000 : 0)).toFixed(2));
@@ -1761,7 +1761,7 @@ function initTSDiagramJS(canvas) {
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
+            label: function (context) {
               const d = context.raw;
               return `Float ${context.dataset.label}: Salinity ${d.x} PSU, Temp ${d.y} °C (Depth: ${d.depth ?? 'N/A'}m, σ_θ ~${d.sigma} kg/m³)`;
             }
@@ -1777,7 +1777,7 @@ function mapHtml(rows) {
   if (!pts.length) return '<p class="empty-note">No coordinate data in this result.</p>';
 
   const mapId = "map_" + Math.random().toString(36).substr(2, 9);
-  
+
   setTimeout(() => {
     initLeafletMap(mapId, pts);
   }, 100);
@@ -1800,7 +1800,7 @@ function initLeafletMap(mapId, pts) {
   const avgLon = lons.reduce((a, b) => a + b, 0) / lons.length;
 
   const map = L.map(mapId).setView([avgLat, avgLon], 4);
-  
+
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap &copy; CARTO'
   }).addTo(map);
@@ -1817,7 +1817,7 @@ function initLeafletMap(mapId, pts) {
   Object.keys(floatTracks).forEach(fid => {
     const track = floatTracks[fid];
     const color = getColorForIndex(trackIdx++);
-    
+
     // Draw connecting drift trajectory line if multiple points exist
     if (track.length > 1) {
       const latLngs = track.map(t => [t.lat, t.lon]);

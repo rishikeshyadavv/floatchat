@@ -60,7 +60,6 @@ assert(document.getElementById('thread') !== null, 'Conversation thread area (#t
 // 6. Input Dock & Controls
 const queryInput = document.getElementById('queryInput') as HTMLInputElement | null;
 assert(queryInput !== null, 'Query text input (#queryInput) present');
-assert(document.getElementById('startBtn') !== null, 'Start query engine button (#startBtn) present');
 assert(document.getElementById('sendBtn') !== null, 'Send query button (#sendBtn) present');
 assert(document.getElementById('clearChatBtn') !== null, 'Clear chat button (#clearChatBtn) present');
 
@@ -68,7 +67,7 @@ assert(document.getElementById('clearChatBtn') !== null, 'Clear chat button (#cl
 const aiModeBar = document.getElementById('aiModeBar');
 assert(aiModeBar !== null, 'AI mode selector bar (#aiModeBar) present');
 const modeButtons = aiModeBar?.querySelectorAll('.mode-btn');
-assert(modeButtons?.length === 4, 'Four AI mode options (Standard, Fast, Thinking, Search) present');
+assert(modeButtons?.length === 3, 'Three AI mode options (Standard, Fast, Thinking) present');
 
 const modelSelectBtn = document.getElementById('modelSelectBtn');
 assert(modelSelectBtn !== null, 'Model dropdown toggle button (#modelSelectBtn) present');

@@ -10,6 +10,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["server.ts", "src/**/*.ts"],
+  "include": ["server.ts", "api/**/*.ts", "src/**/*.ts"],
   "exclude": ["tests/**/*", "node_modules"]
 }

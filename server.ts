@@ -3,7 +3,6 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { onRequest } from 'firebase-functions/https';
 import { initDatabase, queryDb } from './src/db.js';
 import { runQueryWithRetry } from './src/agent.js';
 
@@ -389,7 +388,7 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Initialize database and start server (if running standalone server)
-if (!process.env.FUNCTION_NAME && !process.env.K_SERVICE) {
+if (!process.env.VERCEL && !process.env.FUNCTION_NAME && !process.env.K_SERVICE) {
   initDatabase().then(({ rows, floats }) => {
     console.log(`Database initialized: ${floats} floats, ${rows} readings.`);
     app.listen(PORT, HOST, () => {
@@ -403,6 +402,6 @@ if (!process.env.FUNCTION_NAME && !process.env.K_SERVICE) {
   });
 }
 
-// Export as Firebase 2nd-gen Cloud Function
-export const api = onRequest({ memory: '1GiB', timeoutSeconds: 60, cors: true }, app);
+export default app;
+
 
