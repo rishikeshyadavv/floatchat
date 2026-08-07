@@ -29,7 +29,7 @@ FloatChat is an AI-powered, conversational oceanographic query engine that lets 
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
