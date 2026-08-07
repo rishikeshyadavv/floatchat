@@ -99,7 +99,7 @@ floatchat/
 - **Node.js** v18 or v20+
 - **Gemini API Key** — free from [Google AI Studio](https://aistudio.google.com/)
 
-### 1. Clone & Install
+### 1.  Clone & Install
 
 ```bash
 git clone https://github.com/rishikeshyadavv/floatchat.git
