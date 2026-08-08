@@ -195,7 +195,7 @@ The `floats` table contains **467,796 sensor readings** from **10 ARGO floats**:
 ---
 
 ## 🌐 API Reference
-
+ 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | `POST` | `/api/query` | None | Main query endpoint (used by frontend SPA) |
